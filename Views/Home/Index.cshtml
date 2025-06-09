@@ -5,6 +5,19 @@
 <head>
     <meta charset="utf-8" />
     <title>تطبيق المهام اليومية - MVC</title>
+    <style>
+        .task-form {
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .edit-form {
+            display: inline;
+        }
+        .edit-input {
+            width: 200px;
+            padding: 3px;
+        }
+    </style>
 </head>
 <body>
     <h1>قائمة المهام اليومية</h1>
@@ -12,25 +25,37 @@
         @foreach (var task in Model)
         {
             <li>
-                @if(task.IsComplete)
+                @if (task.IsComplete)
                 {
                     <s>@task.Title</s>
                 }
+                else if (ViewBag.EditingTaskId == task.Id)
+                {
+                    <form method="post" asp-action="UpdateTask" class="edit-form">
+                        <input type="hidden" name="id" value="@task.Id" />
+                        <input type="text" name="title" value="@task.Title" class="edit-input" required />
+                        <button type="submit">حفظ</button>
+                        <a asp-action="Index">إلغاء</a>
+                    </form>
+                }
                 else
                 {
-                    @task.Title
-                    <form method="post" asp-action="CompleteTask" style="display:inline;">
+                    <span>@task.Title</span>
+                    <form method="post" asp-action="CompleteTask" class="task-form">
                         <input type="hidden" name="id" value="@task.Id" />
                         <button type="submit">اكتملت</button>
                     </form>
-
+                    <form method="get" asp-action="Index" class="task-form">
+                        <input type="hidden" name="editingTaskId" value="@task.Id" />
+                        <button type="submit">تعديل</button>
+                    </form>
                 }
             </li>
         }
     </ul>
 
     <form method="post" asp-action="AddTask">
-        <input type="text" name="title" placeholder="أضف مهمة جديدة" />
+        <input type="text" name="title" placeholder="أضف مهمة جديدة" required />
         <button type="submit">إضافة</button>
     </form>
 </body>
